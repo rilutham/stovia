@@ -4,10 +4,14 @@
 package stovia
 
 import (
+	context "context"
 	fmt "fmt"
 	math "math"
 
 	proto "github.com/golang/protobuf/proto"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -155,4 +159,84 @@ var fileDescriptor_d17da2f527e0106a = []byte{
 	0x9b, 0x25, 0x3e, 0xc3, 0xd9, 0x13, 0xe9, 0x8e, 0x23, 0x8e, 0x67, 0xdf, 0x85, 0xfc, 0xbf, 0x7f,
 	0x7c, 0xb9, 0x57, 0xcb, 0x11, 0xcb, 0x83, 0xf9, 0x20, 0x75, 0x78, 0xf7, 0x15, 0x00, 0x00, 0xff,
 	0xff, 0xc1, 0x8e, 0x0c, 0xc5, 0x53, 0x01, 0x00, 0x00,
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// ApiClient is the client API for Api service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type ApiClient interface {
+	GetFutureValue(ctx context.Context, in *FutureValueRequest, opts ...grpc.CallOption) (*FutureValueResponse, error)
+}
+
+type apiClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewApiClient(cc *grpc.ClientConn) ApiClient {
+	return &apiClient{cc}
+}
+
+func (c *apiClient) GetFutureValue(ctx context.Context, in *FutureValueRequest, opts ...grpc.CallOption) (*FutureValueResponse, error) {
+	out := new(FutureValueResponse)
+	err := c.cc.Invoke(ctx, "/stovia.Api/GetFutureValue", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ApiServer is the server API for Api service.
+type ApiServer interface {
+	GetFutureValue(context.Context, *FutureValueRequest) (*FutureValueResponse, error)
+}
+
+// UnimplementedApiServer can be embedded to have forward compatible implementations.
+type UnimplementedApiServer struct {
+}
+
+func (*UnimplementedApiServer) GetFutureValue(ctx context.Context, req *FutureValueRequest) (*FutureValueResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFutureValue not implemented")
+}
+
+func RegisterApiServer(s *grpc.Server, srv ApiServer) {
+	s.RegisterService(&_Api_serviceDesc, srv)
+}
+
+func _Api_GetFutureValue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FutureValueRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServer).GetFutureValue(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/stovia.Api/GetFutureValue",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServer).GetFutureValue(ctx, req.(*FutureValueRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _Api_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "stovia.Api",
+	HandlerType: (*ApiServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetFutureValue",
+			Handler:    _Api_GetFutureValue_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "stovia.proto",
 }
