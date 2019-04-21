@@ -11,6 +11,10 @@ import (
 // API :nodoc:
 type API struct{}
 
+func NewAPI() *API {
+	return &API{}
+}
+
 func (a *API) GetFutureValue(ctx context.Context, in *pb.FutureValueRequest) (*pb.FutureValueResponse, error) {
 	log.Printf("Received: %v", in.Code)
 	return &pb.FutureValueResponse{
